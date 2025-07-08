@@ -1,6 +1,7 @@
 package com.example.developmenttasks.common.security.aop;
 
 import com.example.developmenttasks.auth.entity.UserRole;
+import com.example.developmenttasks.common.dto.AuthMember;
 import com.example.developmenttasks.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 
@@ -30,12 +31,14 @@ public class RoleAccessAspect {
     private void checkRole(UserRole requiredRole) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (!(principal instanceof  AuthMember authMember)){
+        if (!(principal instanceof  AuthMember)){
             throw new CustomException(
                     HttpStatus.UNAUTHORIZED,
                     "INVALID_TOKEN",
                     "유효하지 않은 인증 토큰입니다.");
         }
+
+        AuthMember authMember = (AuthMember) principal;
 
         if (!authMember.getUserRoles().contains(requiredRole)){
             throw new CustomException(
