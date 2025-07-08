@@ -27,5 +27,20 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     private List<UserRole> roles = new ArrayList<>();
+
+    public User(String username, String password, String nickname) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+    }
+
+    public void addRole(UserRole role) {
+        this.roles.add(role);
+    }
+
+    public List<UserRole> getRoles() {
+        return roles;
+    }
 }
