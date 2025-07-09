@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -45,5 +43,13 @@ public class AuthService {
         throw new CustomException(HttpStatus.UNAUTHORIZED,"INVALID_CREDENTIALS","아이디 또는 비밀번호가 올바르지 않습니다.");
     }
     return jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getRoles());
+    }
+
+    public void grantAdminRole(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(
+                        HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 사용자를 찾을 수 없습니다."));
+        user.addRole(UserRole.ADMIN);
+        userRepository.save(user);
     }
 }
