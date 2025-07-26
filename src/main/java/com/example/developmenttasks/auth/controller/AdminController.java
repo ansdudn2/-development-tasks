@@ -1,5 +1,6 @@
 package com.example.developmenttasks.auth.controller;
 
+import com.example.developmenttasks.auth.dto.response.AdminResponse;
 import com.example.developmenttasks.auth.service.AuthService;
 import com.example.developmenttasks.common.security.annotation.Admin;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class AdminController {
 
     @PatchMapping("/{userId}/roles")
     @Admin
-    public ResponseEntity<Void> grantAdmin(@PathVariable Long userId) {
-        authService.grantAdminRole(userId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<AdminResponse> grantAdmin(@PathVariable Long userId) {
+        AdminResponse response = authService.grantAdminRole(userId);
+        return ResponseEntity.ok(response);
     }
 }

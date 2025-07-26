@@ -2,6 +2,7 @@ package com.example.developmenttasks.auth.service;
 
 import com.example.developmenttasks.auth.dto.request.LoginRequest;
 import com.example.developmenttasks.auth.dto.request.SignupRequest;
+import com.example.developmenttasks.auth.dto.response.AdminResponse;
 import com.example.developmenttasks.auth.entity.User;
 import com.example.developmenttasks.auth.entity.UserRole;
 import com.example.developmenttasks.auth.repository.UserRepository;
@@ -11,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +28,7 @@ public class AuthService {
 
     public void signup(SignupRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()){
-            throw new CustomException(HttpStatus.BAD_REQUEST, "USERNAME_EXISTS","이미 존재하는 사용자입니다.");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "USERNAME_EXISTS","이미 가입된 사용자입니다.");
         }
 
         User user = new  User(
@@ -45,11 +50,18 @@ public class AuthService {
     return jwtTokenProvider.generateToken(user.getId(), user.getUsername(), user.getRoles());
     }
 
-    public void grantAdminRole(Long userId) {
+    public AdminResponse grantAdminRole(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(
                         HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 사용자를 찾을 수 없습니다."));
+        user.getRoles().remove(UserRole.USER);
         user.addRole(UserRole.ADMIN);
-        userRepository.save(user);
+        User saved = userRepository.save(user);
+
+        List<AdminResponse.RoleDto> dtos = saved.getRoles().stream()
+                .map(r -> new AdminResponse.RoleDto(r.name()))
+                .collect(Collectors.toList());
+
+        return new AdminResponse(saved.getUsername(), saved.getNickname(), dtos);
     }
 }
