@@ -73,19 +73,21 @@ public class AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(
                         HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "해당 사용자를 찾을 수 없습니다."));
+        if (!user.getRoles().contains(UserRole.ADMIN)){
+            //기존 user 역할 제거 및 admin 역할 추가
+            user.getRoles().remove(UserRole.USER);
+            user.addRole(UserRole.ADMIN);
 
-        //기존 user 역할 제거 및 admin 역할 추가
-        user.getRoles().remove(UserRole.USER);
-        user.addRole(UserRole.ADMIN);
+            User saved = userRepository.save(user);
 
-        User saved = userRepository.save(user);
+        }
 
         // dto용 roles 리스트로 맵핑
-        List<String> roles = saved.getRoles().stream()
+        List<String> roles = user.getRoles().stream()
                 .map(UserRole::name)
                 .collect(Collectors.toList());
 
         // 응답 dto 생성 및 반환
-        return new AdminResponse(saved.getUsername(), saved.getNickname(), roles);
+        return new AdminResponse(user.getUsername(), user.getNickname(), roles);
     }
 }
