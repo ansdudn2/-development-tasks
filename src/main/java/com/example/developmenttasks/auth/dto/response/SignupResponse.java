@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class AdminResponse {
+public class SignupResponse {
     private String username;
     private String nickname;
     private List<String> roles;

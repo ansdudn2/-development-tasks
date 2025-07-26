@@ -3,6 +3,7 @@ package com.example.developmenttasks.auth.controller;
 import com.example.developmenttasks.auth.dto.request.LoginRequest;
 import com.example.developmenttasks.auth.dto.request.SignupRequest;
 import com.example.developmenttasks.auth.dto.response.AuthResponse;
+import com.example.developmenttasks.auth.dto.response.SignupResponse;
 import com.example.developmenttasks.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequest request) {
-        authService.signup(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
+        SignupResponse response = authService.signup(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
