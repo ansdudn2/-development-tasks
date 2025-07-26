@@ -3,6 +3,7 @@ package com.example.developmenttasks.common.security;
 import com.example.developmenttasks.auth.entity.UserRole;
 import com.example.developmenttasks.common.dto.AuthMember;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
     private Key key;
@@ -40,7 +41,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date validity = new Date(now.getTime() + TOKEN_VALID_TIME);
 
-        return jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -60,21 +61,21 @@ public class JwtTokenProvider {
                 username,
                 roles.stream().map(UserRole::valueOf).collect(Collectors.toList())
         );
-        return new UsernamePasswordAuthenticationToken(authMember,"",authMember.getAuthorities);
+        return new UsernamePasswordAuthenticationToken(authMember,"",authMember.getAuthorities());
     }
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
             return true;
-        } catch (jwtException | IllegalArgumentException e){
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.builder()
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
-                .buuld().
+                .build().
                 parseClaimsJws(token).
                 getBody();
     }
