@@ -29,7 +29,7 @@ public class SecurityConfig {
         http.
                 csrf(csrf-> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authz->authz.requestMatchers("/login","/signup","/swagger-ui/**","/v3/api-docs/**").permitAll()
+                .authorizeHttpRequests(authz->authz.requestMatchers("/login","/signup","/swagger-ui.html","/swagger-ui/**","/v3/api-docs/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
